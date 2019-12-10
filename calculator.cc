@@ -1,13 +1,14 @@
 #include "calculator.h"
 #include <iostream>
 #include <regex>
+#include <sstream>
 
 using namespace std;
 
 namespace {
 static const std::regex doubleRegex{ R"([+\-]?(?:0|[1-9]\d*)(?:\.\d*)?(?:[eE][+\-]?\d+)?)" };
 static const std::regex intRegex{ R"([+-]?(\d+))"};
-static const std::regex validRegex{ R"([+-]?(\d+))([+-*/])"};
+//static const std::regex validRegex{ R"([+-]?(\d+))([+-*/])"};
 }
 
 Calculator::Calculator() :
@@ -19,7 +20,23 @@ Calculator::Calculator() :
 std::string Calculator::calculate(const std::string &line)
 {
     mCurrentLine = line;
+    stringstream ss(line);
+    string item;
+    while (getline(ss, item, ' ')) {
+        if (isNumber(item)) {
+            mOperands.push(item);
+        } else if (isOperator(item)) {
+            if (mOperands.size() < 2) {
+                std::clog << "mOperands.size() < 2 and operator is " << item << std::endl;
+                return "";
+            }
 
+        } else if (" " == item) {
+            continue;
+        } else {
+            return "";
+        }
+    }
 
 }
 
@@ -35,6 +52,14 @@ bool Calculator::isValid(const string &line)
 bool Calculator::isOperator(const string &line)
 {
     if (line == "+" || line == "-" || line == "*" || line == "/") {
+        return true;
+    }
+    return false;
+}
+
+bool Calculator::isNumber(const string &line)
+{
+    if (std::regex_match(line, intRegex) || std::regex_match(line, doubleRegex)) {
         return true;
     }
     return false;
