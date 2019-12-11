@@ -6,9 +6,9 @@
 using namespace std;
 
 namespace {
+//TODO: Get rid of regex
 static const std::regex doubleRegex{ R"([+\-]?(?:0|[1-9]\d*)(?:\.\d*)?(?:[eE][+\-]?\d+)?)" };
 static const std::regex intRegex{ R"([+-]?(\d+))"};
-//static const std::regex validRegex{ R"([+-]?(\d+))([+-*/])"};
 }
 
 Calculator::Calculator() :
@@ -22,31 +22,60 @@ std::string Calculator::calculate(const std::string &line)
     mCurrentLine = line;
     stringstream ss(line);
     string item;
+    //TODO: Make parsing different to skip several whitespaces. Currently 2 or more whitespaces cause error
     while (getline(ss, item, ' ')) {
         if (isNumber(item)) {
             mOperands.push(item);
         } else if (isOperator(item)) {
-            if (mOperands.size() < 2) {
+            if (!makeCalculation(item)) {
                 std::clog << "mOperands.size() < 2 and operator is " << item << std::endl;
                 return "";
             }
-
         } else if (" " == item) {
             continue;
         } else {
             return "";
         }
     }
-
+    string result = mOperands.empty() ? "" : mOperands.top();
+    clearOperands();
+    return result;
 }
 
-// Not working at the moment
-bool Calculator::isValid(const string &line)
+bool Calculator::makeCalculation(const string &_operator)
 {
-//    if (std::regex_match(line, validRegex)){
-//        return true;
-//    }
-    return false;
+    if (mOperands.size() < 2) {
+        return false;
+    }
+    string firstOperandString = mOperands.top();
+    mOperands.pop();
+    string secondOperandString = mOperands.top();
+    mOperands.pop();
+    string result;
+
+    //TODO: Make conversation and calculations not only for floats
+    float first = stof(firstOperandString);
+    float second = stof(secondOperandString);
+
+    //TODO: Handle overflow
+    if (_operator == "+") {
+        result = sum(first, second);
+    } else if (_operator == "-") {
+        result = substr(second, first);
+    } else if (_operator == "*") {
+        result = multiply(first, second);
+    } else if (_operator == "/") {
+        result = divide(second, first);
+    }
+    mOperands.push(result);
+    return true;
+}
+
+void Calculator::clearOperands()
+{
+    while (!mOperands.empty()) {
+        mOperands.pop();
+    }
 }
 
 bool Calculator::isOperator(const string &line)
@@ -59,77 +88,38 @@ bool Calculator::isOperator(const string &line)
 
 bool Calculator::isNumber(const string &line)
 {
+    //TODO: Get rid of regex
     if (std::regex_match(line, intRegex) || std::regex_match(line, doubleRegex)) {
         return true;
     }
     return false;
 }
 
-template<typename T, typename T1, typename T2>
-T Calculator::sum(T1 a, T2 b)
+template<typename T1, typename T2>
+string Calculator::sum(T1 a, T2 b)
 {
-
+    return to_string(a+b);
 }
 
-template<typename T, typename T1, typename T2>
-T Calculator::substr(T1 a, T2 b)
+template<typename T1, typename T2>
+string Calculator::substr(T1 a, T2 b)
 {
-
+    return to_string(a-b);
 }
 
-template<typename T, typename T1, typename T2>
-T Calculator::multiply(T1 a, T2 b)
+template<typename T1, typename T2>
+string Calculator::multiply(T1 a, T2 b)
 {
-
+    return to_string(a*b);
 }
 
-template<typename T, typename T1, typename T2>
-T Calculator::divide(T1 a, T2 b)
+template<typename T1, typename T2>
+string Calculator::divide(T1 a, T2 b)
 {
-
-}
-
-
-void handleDouble(double d) {
-    std::cout << "Double = " << d << "\n";
-}
-
-void handleInt(int i) {
-    std::cout << "Int = " << i << "\n";
-}
-
-void handleString(std::string const & s) {
-    std::cout << "String = " << s << "\n";
-}
-
-void parse(std::string const& input) {
-
-    if (std::regex_match(input, intRegex)){
-        istringstream inputStream(input);
-        int i;
-        inputStream >> i;
-        handleInt(i);
+    if (b == 0) {
+        cerr << "Devision by 0" << endl;
+        return "";
     }
-    else if (std::regex_match(input, doubleRegex)) {
-        istringstream inputStream(input);
-        double d;
-        inputStream >> d;
-        handleDouble(d);
-    }
-    else {
-        handleString(input);
-    }
+    return to_string(a/b);
 }
 
-//int main()
-//{
-//    Calculator calc;
-//    parse("+4.234e10");
-//    parse("1 2");
-//    parse("1.0");
-//    parse("345.0");
-//    parse("-15");
-//    parse("123abc");
-//    cout << "Float " << 52.0001 << endl;
-//    cout << "is valid" << "2 3 +" << calc.isValid("2 3 +") << endl;
-//}

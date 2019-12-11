@@ -8,19 +8,32 @@ class CalculatorTest : public ::testing::Test {
  public:
   void SetUp() override {}
   void TearDown() override {}
-  //Calculator calc;
+  Calculator calc;
 };
 
 TEST_F(CalculatorTest, SimpleExpressions) {
-  //ASSERT_EQ("0", calc.calculate("5 5 -"));
-//  ASSERT_EQ(3, "5 2 -");
-//  ASSERT_EQ(-5, "5 15 -");
-//  ASSERT_EQ(10, "5 5 +");
-//  ASSERT_EQ(0, "0 0 -");
-//  ASSERT_EQ(45, "9 5 *");
-//  ASSERT_EQ(1, "5 5 /");
-//  ASSERT_EQ(5, "25 5 /");
+  EXPECT_FLOAT_EQ(0, stof(calc.calculate("5 5 -")));
+  EXPECT_FLOAT_EQ(3, stof(calc.calculate("5 2 -")));
+  EXPECT_FLOAT_EQ(-10, stof(calc.calculate("5 15 -")));
+  EXPECT_FLOAT_EQ(10, stof(calc.calculate("5 5 +")));
+  EXPECT_FLOAT_EQ(0, stof(calc.calculate("0 0 -")));
+  EXPECT_FLOAT_EQ(45, stof(calc.calculate("9 5 *")));
+  EXPECT_FLOAT_EQ(1, stof(calc.calculate("5 5 /")));
+  EXPECT_FLOAT_EQ(5, stof(calc.calculate("25 5 /")));
 }
+
+//TODO: Make more tests with not allowed expressions
+TEST_F(CalculatorTest, NotAllowedExpressions) {
+    EXPECT_STREQ("", calc.calculate("5 0 /").c_str());
+}
+
+//TODO: Make tests with invalid expressions
+
+//TODO: Make complex tests (e.g. more operands and operators)
+
+//TODO: Make tests for overflow
+
+
 
 }  // namespace testing
 }  // namespace dev
