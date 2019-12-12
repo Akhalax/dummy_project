@@ -6,9 +6,15 @@ list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 set(SOURCES calculator.cc)
 add_library(ProjectLib ${SOURCES})
+add_library(Utils utils/utils.cc)
+
 
 add_executable(project main.cc)
-target_link_libraries(project ProjectLib)
+target_link_libraries(project
+            ProjectLib
+            Utils
+)
 
 enable_testing()
 add_subdirectory(test)
+#add_subdirectory(utils)

@@ -1,14 +1,13 @@
 #include "calculator.h"
 #include <iostream>
-#include <regex>
 #include <sstream>
+#include "utils/utils.h"
 
 using namespace std;
 
 namespace {
-//TODO: Get rid of regex
-static const std::regex doubleRegex{ R"([+\-]?(?:0|[1-9]\d*)(?:\.\d*)?(?:[eE][+\-]?\d+)?)" };
-static const std::regex intRegex{ R"([+-]?(\d+))"};
+constexpr char kEmptyString[] = "";
+constexpr size_t kMinOperandsNumber = 2;
 }
 
 Calculator::Calculator() :
@@ -16,7 +15,7 @@ Calculator::Calculator() :
     mCurrentLine()
 { }
 
-
+// TODO: get rid of multiple returns
 std::string Calculator::calculate(const std::string &line)
 {
     mCurrentLine = line;
@@ -28,23 +27,24 @@ std::string Calculator::calculate(const std::string &line)
             mOperands.push(item);
         } else if (isOperator(item)) {
             if (!makeCalculation(item)) {
-                std::clog << "mOperands.size() < 2 and operator is " << item << std::endl;
-                return "";
+                return kEmptyString;
             }
         } else if (" " == item) {
             continue;
         } else {
-            return "";
+            std::clog << "Invalid expression" << std::endl;
+            return kEmptyString;
         }
     }
-    string result = mOperands.empty() ? "" : mOperands.top();
+    string result = mOperands.empty() ? kEmptyString : mOperands.top();
     clearOperands();
     return result;
 }
 
 bool Calculator::makeCalculation(const string &_operator)
 {
-    if (mOperands.size() < 2) {
+    if (mOperands.size() < kMinOperandsNumber) {
+        std::clog << "mOperands.size() <" <<  kMinOperandsNumber << " and operator is " << _operator << std::endl;
         return false;
     }
     string firstOperandString = mOperands.top();
@@ -61,7 +61,7 @@ bool Calculator::makeCalculation(const string &_operator)
     if (_operator == "+") {
         result = sum(first, second);
     } else if (_operator == "-") {
-        result = substr(second, first);
+        result = subtract(second, first);
     } else if (_operator == "*") {
         result = multiply(first, second);
     } else if (_operator == "/") {
@@ -78,23 +78,6 @@ void Calculator::clearOperands()
     }
 }
 
-bool Calculator::isOperator(const string &line)
-{
-    if (line == "+" || line == "-" || line == "*" || line == "/") {
-        return true;
-    }
-    return false;
-}
-
-bool Calculator::isNumber(const string &line)
-{
-    //TODO: Get rid of regex
-    if (std::regex_match(line, intRegex) || std::regex_match(line, doubleRegex)) {
-        return true;
-    }
-    return false;
-}
-
 template<typename T1, typename T2>
 string Calculator::sum(T1 a, T2 b)
 {
@@ -102,7 +85,7 @@ string Calculator::sum(T1 a, T2 b)
 }
 
 template<typename T1, typename T2>
-string Calculator::substr(T1 a, T2 b)
+string Calculator::subtract(T1 a, T2 b)
 {
     return to_string(a-b);
 }
@@ -117,7 +100,7 @@ template<typename T1, typename T2>
 string Calculator::divide(T1 a, T2 b)
 {
     if (b == 0) {
-        cerr << "Devision by 0" << endl;
+        clog << "Devision by 0" << endl;
         return "";
     }
     return to_string(a/b);
