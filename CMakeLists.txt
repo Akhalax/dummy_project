@@ -4,15 +4,17 @@ project(dummy_cmake_project)
 set(CMAKE_CXX_STANDARD 14)
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
-set(SOURCES calculator.cc)
+set(SOURCES
+      calculator.cc
+      utils/utils.h
+      utils/utils.cc
+)
 add_library(ProjectLib ${SOURCES})
-add_library(Utils utils/utils.cc)
-
 
 add_executable(project main.cc)
 target_link_libraries(project
             ProjectLib
-            Utils
+#            Utils
 )
 
 enable_testing()
