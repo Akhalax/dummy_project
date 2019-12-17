@@ -29,7 +29,6 @@ private:
     std::string divide(T1 a, T2 b);
 
     std::stack <std::string> mOperands;
-    std::string mCurrentLine;
 };
 
 #endif // CALCULATOR_H

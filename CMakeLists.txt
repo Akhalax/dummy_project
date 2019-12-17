@@ -14,9 +14,7 @@ add_library(ProjectLib ${SOURCES})
 add_executable(project main.cc)
 target_link_libraries(project
             ProjectLib
-#            Utils
 )
 
 enable_testing()
 add_subdirectory(test)
-#add_subdirectory(utils)

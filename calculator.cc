@@ -11,14 +11,13 @@ constexpr size_t kMinOperandsNumber = 2;
 }
 
 Calculator::Calculator() :
-    mOperands(),
-    mCurrentLine()
+    mOperands()
 { }
 
 // TODO: get rid of multiple returns
 std::string Calculator::calculate(const std::string &line)
 {
-    mCurrentLine = line;
+    clearOperands();
     stringstream ss(line);
     string item;
     //TODO: Make parsing different to skip several whitespaces. Currently 2 or more whitespaces cause error
@@ -37,7 +36,6 @@ std::string Calculator::calculate(const std::string &line)
         }
     }
     string result = mOperands.empty() ? kEmptyString : mOperands.top();
-    clearOperands();
     return result;
 }
 

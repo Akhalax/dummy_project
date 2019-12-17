@@ -28,10 +28,19 @@ TEST_F(CalculatorTest, NotAllowedExpressions) {
 }
 
 //TODO: Make tests with invalid expressions
+TEST_F(CalculatorTest, InvalidExpressions) {
+    EXPECT_STREQ("", calc.calculate("4 4 4 9 jk sdf").c_str());
+    EXPECT_STREQ("", calc.calculate("    7 7").c_str());
+    EXPECT_STREQ("", calc.calculate("3 /").c_str());
+    EXPECT_STREQ("", calc.calculate("3 1 / *").c_str());
+}
 
 //TODO: Make complex tests (e.g. more operands and operators)
 
 //TODO: Make tests for overflow
+TEST_F(CalculatorTest, Overflow) {
+    EXPECT_STREQ("inf", calc.calculate("3.402823e+38 3.402823e+38 *").c_str());
+}
 
 
 
